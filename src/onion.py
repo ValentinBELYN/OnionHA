@@ -18,7 +18,7 @@
 # | Onion HA Engine                                                 |
 # |                                                                 |
 # | @author:    Valentin BELYN                                      |
-# | @version:   1.0.1 (22)                                          |
+# | @version:   1.0.2 (23)                                          |
 # |                                                                 |
 # | Follow us on GitHub: https://github.com/ValentinBELYN/OnionHA   |
 # +-----------------------------------------------------------------+
@@ -68,9 +68,9 @@ __copyright__ = 'Copyright (C) 2018 Valentin BELYN'
 __license__ = 'GNU General Public License v3.0'
 
 # Version
-__version__ = '1.0.1'
-__build__ = '22'
-__date__ = '2018-02-01'
+__version__ = '1.0.2'
+__build__ = '23'
+__date__ = '2018-02-04'
 
 
 # +-----------------------------------------------------------------+
@@ -97,7 +97,7 @@ CONFIG_TEMPLATE = {
             'max': 1000,
             'required': True
             },
-        'startDelay': {
+        'initDelay': {
             'type': 'int',
             'min': 0,
             'max': 1000,
@@ -148,8 +148,9 @@ CONFIG_TEMPLATE = {
         }
     }
 
-# PID file location
-PID_FILE = '/var/run/oniond.pid'
+# PID information
+PID = getpid()
+PID_FILE = PosixPath('/var/run/oniond.pid')
 
 
 # +-----------------------------------------------------------------+
@@ -223,7 +224,7 @@ class OnionRing(Thread):
         return self.status
 
 
-class OnionParser():
+class OnionParser:
     '''Retrieves values from a configuration file.
 
     Important:
@@ -238,7 +239,7 @@ class OnionParser():
 
         # Opening the configuration file
         try:
-            file = parser.read(filename)
+            file = parser.read(self.filename)
         except:
             file = False
 
@@ -406,7 +407,7 @@ def read_configuration():
     server_mode = config['global']['mode']
     sender_interface = config['global']['interface']
     deadtime = config['global']['deadTime']
-    start_delay = config['global']['startDelay']
+    init_delay = config['global']['initDelay']
     log_enabled = config['logging']['enabled']
     log_file = config['logging']['file']
     gateway_address = config['nodes']['gateway']
@@ -422,7 +423,7 @@ def read_configuration():
         remote_address = config['nodes']['master']
 
     return (
-        server_mode, sender_interface, deadtime, start_delay,
+        server_mode, sender_interface, deadtime, init_delay,
         log_enabled, log_file,
         server_address, remote_address, gateway_address,
         scenario_active, scenario_passive
@@ -520,18 +521,15 @@ def onion_about():
         about_onion_mode = 'unknown'
         about_server_address = 'unknown'
 
-    about_version = '{} (build {})'.format(__version__, __build__).ljust(32)
-    about_date = __date__.ljust(32)
-    about_author = __author__.ljust(32)
-    about_license = __license__.ljust(32)
+    version = '{} (build {})'.format(__version__, __build__)
 
     print('\n             o+              +-------------------------------------------+',
           '             /d/             | Onion HA Engine                           |',
           '          .h  dds.           +-------------------------------------------+',
-          '         /h+  ddhdo.         | Version: {} |'.format(about_version),
-          '       :yh/  -ddh/ ds.       | Release: {} |'.format(about_date),
-          '     -yds`  `hdddy  dd+      | Author:  {} |'.format(about_author),
-          '    /ddy    yddddd+  dd+     | License: {} |'.format(about_license),
+          '         /h+  ddhdo.         | Version: {:32} |'.format(version),
+          '       :yh/  -ddh/ ds.       | Release: {:32} |'.format(__date__),
+          '     -yds`  `hdddy  dd+      | Author:  {:32} |'.format(__author__),
+          '    /ddy    yddddd+  dd+     | License: {:32} |'.format(__license__),
           '    hdd+   -ddddddy  ddh     +-------------------------------------------+',
           '    hddy   :ddddddy  ddy',
           '    -hdds`  hddddd  hdh.     Configuration: {}'.format(CONFIG_FILE),
@@ -580,9 +578,7 @@ if geteuid() != 0:
     exit(2)
 
 # Checking if another instance of Onion is running
-path_pid_file = PosixPath(PID_FILE)
-
-if path_pid_file.exists() and path_pid_file.is_file():
+if PID_FILE.exists() and PID_FILE.is_file():
     print('Onion is already running.')
     exit(4)
 
@@ -602,16 +598,14 @@ if not config_ext:
           sep='\n\n')
     exit(3)
 
-server_mode, sender_interface, deadtime, start_delay, \
+server_mode, sender_interface, deadtime, init_delay, \
     log_enabled, log_file, \
     server_address, remote_address, gateway_address, \
     scenario_active, scenario_passive = config_ext
 
 # Writing the daemon PID in a file
-current_pid = getpid()
-
 with open(PID_FILE, 'w') as file:
-    file.write(str(current_pid))
+    file.write(str(PID))
 
 # Logging the start of Onion
 log(0, 'Onion is starting...')
@@ -620,7 +614,7 @@ log(0, 'Version {} (build {}) released on {}'.format(__version__, __build__,
 log(0, 'Using configuration at: {}'.format(CONFIG_FILE))
 
 # Waiting before to start Onion
-sleep(start_delay)
+sleep(init_delay)
 
 # Starting the remote host verification system OnionRing
 server = OnionRing(remote_address)
@@ -723,7 +717,7 @@ if latest_scenario != 2:
     sleep(1)
 
 # Deleting the Onion PID file
-path_pid_file.unlink()
+PID_FILE.unlink()
 
 log(0, 'Onion shutdown completed')
 exit(0)

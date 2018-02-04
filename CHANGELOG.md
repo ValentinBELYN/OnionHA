@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.2
+> *Released on 2018-02-04*
+
+- Changed ```startDelay``` to ```initDelay```.
+
 ## v1.0.1
 > *Released on 2018-02-01*
 
