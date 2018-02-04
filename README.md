@@ -19,7 +19,7 @@
   - [Configuration](#configuration)
   - [Interacting with Onion](#interacting-with-onion)
   - [Beware! Firewall rules and ARP cache](#beware-firewall-rules-and-arp-cache)
-- [Contributing + Donations](#contributing--donations)
+- [Contributing](#contributing)
 - [Thanks](#thanks)
 - [License](#license)
 
@@ -90,7 +90,7 @@ Onion is very easy to configure. Simply edit its configuration file located at `
   mode:       master                 # master or slave node
   interface:  ens33
   deadTime:   2                      # failure (death) detection time (in seconds)
-  startDelay: 0                      # delay before starting Onion (in seconds)
+  initDelay:  0                      # delay before starting Onion (in seconds)
 
 # Logging
 [logging]
@@ -189,7 +189,7 @@ Be careful when setting up Onion. Configure your firewall rules (on servers and 
 
 Furthermore, ARP cache of routers may affect Onion's performance. Decrease their refresh time — if possible — (to 5 seconds, 20 seconds or several minutes according to your needs) to quickly take into account the new virtual IP address/physical MAC address association in case of a server failure.
 
-## Contributing + Donations
+## Contributing
 
 Onion is the result of many months of work. From its conception to development, it has been fully developed on my free time. If you want to contribute to its development, you can buy me a :beer: [by making a donation](https://paypal.me/ValentinBELYN) :)
 
