@@ -18,7 +18,7 @@
 # | Onion HA Engine                                                 |
 # |                                                                 |
 # | @author:    Valentin BELYN                                      |
-# | @version:   1.0.2 (23)                                          |
+# | @version:   1.0.3 (26)                                          |
 # |                                                                 |
 # | Follow us on GitHub: https://github.com/ValentinBELYN/OnionHA   |
 # +-----------------------------------------------------------------+
@@ -68,9 +68,9 @@ __copyright__ = 'Copyright (C) 2018 Valentin BELYN'
 __license__ = 'GNU General Public License v3.0'
 
 # Version
-__version__ = '1.0.2'
-__build__ = '23'
-__date__ = '2018-02-04'
+__version__ = '1.0.3'
+__build__ = '26'
+__date__ = '2018-02-17'
 
 
 # +-----------------------------------------------------------------+
@@ -154,6 +154,42 @@ PID_FILE = PosixPath('/var/run/oniond.pid')
 
 
 # +-----------------------------------------------------------------+
+# | HELP                                                            |
+# +-----------------------------------------------------------------+
+build = f'{__version__} (build {__build__})'
+
+ABOUT = f'''
+             o+              +-------------------------------------------+
+             /d/             | Onion HA Engine                           |
+          .h  dds.           +-------------------------------------------+
+         /h+  ddhdo.         | Version: {build:32} |
+       :yh/  -ddh/ ds.       | Release: {__date__:32} |
+     -yds`  `hdddy  dd+      | Author:  {__author__:32} |
+    /ddy    yddddd+  dd+     | License: {__license__:32} |
+    hdd+   -ddddddy  ddh     +-------------------------------------------+
+    hddy   :ddddddy  ddy
+    -hdds`  hddddd  hdh.      Configuration: {CONFIG_FILE}
+     `ohdh+. dddh+odh+`       Mode: {{mode}}
+       `-+syyhddys+:`         Address: {{address}}
+'''
+
+HELP = '''\
+Usage: oniond [command]
+
+Commands:
+    start           start Onion with the current configuration
+    check           check the Onion node configuration
+    version         output the version of the Onion node
+    about           display all information about the daemon
+    help            display this help message
+
+\'start\' is the default command.\
+'''
+
+VERSION = f'oniond {__version__} (build {__build__}) released on {__date__}'
+
+
+# +-----------------------------------------------------------------+
 # | DAEMON STOPPING PROCEDURE                                       |
 # +-----------------------------------------------------------------+
 def onion_stop(signal, frame):
@@ -213,14 +249,8 @@ class OnionRing(Thread):
                 sleep(1)
 
     def is_alive(self):
-        '''Return if the host is alive.
+        '''Return if the host is alive.'''
 
-        Examples:
-            >>> host.is_alive()
-            True   -> alive
-            >>> host.is_alive()
-            False  -> dead
-        '''
         return self.status
 
 
@@ -317,6 +347,22 @@ class OnionParser:
         self.config[section][option] = 'NOT_FOUND'
 
 
+class Colors:
+    '''Adds colors to a string.'''
+
+    INFO = '\033[0m'
+    WARNING = '\033[1;33m'
+    CRITICAL = '\033[1;31m'
+    END = '\033[0m'
+
+    REFERENCES = {
+        'INFO': INFO,
+        'WARNING': WARNING,
+        'CRITICAL': CRITICAL,
+        'END': END
+    }
+
+
 # +-----------------------------------------------------------------+
 # | FUNCTIONS                                                       |
 # +-----------------------------------------------------------------+
@@ -332,7 +378,7 @@ def loader(message, delay):
     bars = ('|', '/', '-', '\\')
 
     for i in range(0, delay):
-        print('{}   {}'.format(bars[i % 4], message), end='\r', flush=True)
+        print(f'{bars[i % 4]}   {message}', end='\r', flush=True)
 
         sleep(0.05)
 
@@ -341,27 +387,15 @@ def log(level, message):
     '''Log an event.
 
     Examples:
-        >>> log(0, 'Onion is starting...')
+        >>> log('INFO', 'Onion is starting...')
+        >>> log('WARNING', 'This Onion server is passive')
+        >>> log('CRITICAL', 'An error occurred while running the active scenario')
     '''
 
     if log_enabled != 'no':
-        levels = (
-            'INFORMATION',
-            'WARNING',
-            'CRITICAL'
-        )
-
-        colors = (
-            '0',      # Default
-            '1;33',   # Yellow
-            '1;31'    # Red
-        )
-
         # Displaying the message in the terminal
         # Useful for logging with systemd
-        print('[\033[{}m{}\033[0m] {}'.format(colors[level],
-                                              levels[level][0],
-                                              message), flush=True)
+        print(f'[{Colors.REFERENCES[level]}{level[0]}{Colors.END}] {message}')
 
         if log_enabled == 'yes':
             # Retrieving the current date
@@ -371,13 +405,11 @@ def log(level, message):
             hostname = gethostname()
 
             # Creating the log entry
-            log_entry = '{} {} oniond {} : {}'.format(
-                date, hostname,
-                levels[level], message)
+            log_entry = f'{date} {hostname} oniond {level}: {message}\n'
 
             try:
                 with open(log_file, 'a') as file:
-                    file.write(log_entry + '\n')
+                    file.write(log_entry)
             except IOError:
                 pass
 
@@ -438,7 +470,7 @@ def set_scenario(scenario):
         >>> set_scenario('passive')
     '''
 
-    log(1, 'The Onion server {} is {}'.format(server_address, scenario))
+    log('WARNING', f'The Onion server {server_address} is {scenario}')
 
     try:
         if scenario == 'active':
@@ -446,7 +478,7 @@ def set_scenario(scenario):
         else:
             run(scenario_passive)
     except:
-        log(2, 'An error occurred while running the {} scenario'.format(scenario))
+        log('CRITICAL', f'An error occurred while running the {scenario} scenario')
 
 
 # +-----------------------------------------------------------------+
@@ -455,11 +487,11 @@ def set_scenario(scenario):
 def onion_check():
     '''Check the Onion node configuration.'''
 
-    print('Onion HA Engine {}'.format(__version__),
+    print(f'Onion HA Engine {__version__}',
           __copyright__,
           __license__,
-          '\nPlease wait...',
-          sep='\n', end='\n\n')
+          '\nPlease wait...\n',
+          sep='\n')
 
     loader('Processing...', 1.5)
 
@@ -478,13 +510,14 @@ def onion_check():
 
         # Displaying the configuration
         for section in config:
-            print('    Checking the {} section...'.format(section.capitalize()))
+            print(f'    Checking the {section.capitalize()} section...')
 
             for option in config[section]:
                 if config[section][option] == 'NOT_FOUND':
-                    status = '[ \033[1;33mERROR\033[0m ]'
+                    status = f'[ {Colors.WARNING}ERROR{Colors.END} ]'
                 else:
                     status = '[ OK ]'
+
                 print(' ' * 10 + (option + ' option').ljust(40) + status)
 
             print()
@@ -498,14 +531,13 @@ def onion_check():
         nb_errors = 1
         print('The configuration file cannot be found or its syntax is wrong.')
 
-    print('\nErrors: {}'.format(nb_errors))
+    print(f'\nErrors: {nb_errors}')
 
 
 def onion_version():
     '''Output the version of the Onion node.'''
 
-    print('oniond {} (build {}) released on {}'.format(__version__, __build__,
-                                                       __date__))
+    print(VERSION)
 
 
 def onion_about():
@@ -515,41 +547,19 @@ def onion_about():
     config_ext = read_configuration()
 
     if config_ext:
-        about_onion_mode = config_ext[0]
-        about_server_address = config_ext[6]
+        server_mode = config_ext[0]
+        server_address = config_ext[6]
     else:
-        about_onion_mode = 'unknown'
-        about_server_address = 'unknown'
+        server_mode = 'unknown'
+        server_address = 'unknown'
 
-    version = '{} (build {})'.format(__version__, __build__)
-
-    print('\n             o+              +-------------------------------------------+',
-          '             /d/             | Onion HA Engine                           |',
-          '          .h  dds.           +-------------------------------------------+',
-          '         /h+  ddhdo.         | Version: {:32} |'.format(version),
-          '       :yh/  -ddh/ ds.       | Release: {:32} |'.format(__date__),
-          '     -yds`  `hdddy  dd+      | Author:  {:32} |'.format(__author__),
-          '    /ddy    yddddd+  dd+     | License: {:32} |'.format(__license__),
-          '    hdd+   -ddddddy  ddh     +-------------------------------------------+',
-          '    hddy   :ddddddy  ddy',
-          '    -hdds`  hddddd  hdh.     Configuration: {}'.format(CONFIG_FILE),
-          '     `ohdh+. dddh+odh+`      Mode: {}'.format(about_onion_mode),
-          '       `-+syyhddys+:`        Address: {}\n'.format(about_server_address),
-          sep='\n')
+    print(ABOUT.format(mode=server_mode, address=server_address))
 
 
 def onion_help():
     '''Display a help message.'''
 
-    print('Usage: oniond [command]\n',
-          'Commands:',
-          '    start           start Onion with the current configuration',
-          '    check           check the Onion node configuration',
-          '    version         output the version of the Onion node',
-          '    about           display all information about the daemon',
-          '    help            display this help message\n',
-          '\'start\' is the default command.',
-          sep='\n')
+    print(HELP)
 
 
 # Available options
@@ -569,7 +579,7 @@ if len(options) > 1:
         onion_help()
         exit(0)
     else:
-        print('Unknown command: {}'.format(options[1]))
+        print(f'Unknown command: {options[1]}')
         exit(1)
 
 # Root privileges are required to continue
@@ -593,9 +603,9 @@ if PID_FILE.exists() and PID_FILE.is_file():
 config_ext = read_configuration()
 
 if not config_ext:
-    print('The configuration file cannot be opened.',
+    print('The configuration file cannot be opened.\n',
           'Execute \'oniond check\' to solve this error.',
-          sep='\n\n')
+          sep='\n')
     exit(3)
 
 server_mode, sender_interface, deadtime, init_delay, \
@@ -608,10 +618,9 @@ with open(PID_FILE, 'w') as file:
     file.write(str(PID))
 
 # Logging the start of Onion
-log(0, 'Onion is starting...')
-log(0, 'Version {} (build {}) released on {}'.format(__version__, __build__,
-                                                     __date__))
-log(0, 'Using configuration at: {}'.format(CONFIG_FILE))
+log('INFO', 'Onion is starting...')
+log('INFO', f'Version {__version__} (build {__build__}) released on {__date__}')
+log('INFO', f'Using configuration at: {CONFIG_FILE}')
 
 # Waiting before to start Onion
 sleep(init_delay)
@@ -622,7 +631,7 @@ gateway = OnionRing(gateway_address)
 server.start()
 gateway.start()
 
-log(0, 'Onion is started in {} mode'.format(server_mode))
+log('INFO', f'Onion is started in {server_mode} mode')
 
 # Loop of analysis and learning
 latest_scenario = 0
@@ -643,7 +652,7 @@ while onion_signal:
         else:
             status_name = 'DOWN'
 
-        log(0, 'The remote server {} is {}'.format(remote_address, status_name))
+        log('INFO', f'The remote server {remote_address} is {status_name}')
 
     if gateway_status != latest_gateway_status:
         latest_gateway_status = gateway_status
@@ -653,7 +662,7 @@ while onion_signal:
         else:
             status_name = 'DOWN'
 
-        log(0, 'The gateway {} is {}'.format(remote_address, status_name))
+        log('INFO', f'The gateway {gateway_address} is {status_name}')
 
     # Scenarios
     # The Onion node is master
@@ -697,7 +706,7 @@ while onion_signal:
         # The 'gateway_warning' variable avoids false positives if the
         # OnionRing threads are out of sync
         if gateway_warning > 2:
-            log(2, 'Onion is suspended and waits for the gateway reply')
+            log('CRITICAL', 'Onion is suspended and waits for the gateway reply')
             sleep(2.5)
     else:
         gateway_warning = 0
@@ -705,7 +714,7 @@ while onion_signal:
     sleep(0.5)
 
 # STOPPING ONION
-log(0, 'Onion is shutting down...')
+log('INFO', 'Onion is shutting down...')
 
 # Waiting for the OnionRing threads to stop
 server.join()
@@ -719,5 +728,5 @@ if latest_scenario != 2:
 # Deleting the Onion PID file
 PID_FILE.unlink()
 
-log(0, 'Onion shutdown completed')
+log('INFO', 'Onion shutdown completed')
 exit(0)

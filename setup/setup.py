@@ -5,7 +5,7 @@
 # | Onion HA Setup                                                  |
 # |                                                                 |
 # | @author:    Valentin BELYN                                      |
-# | @version:   1.0 (6)                                             |
+# | @version:   1.0 (7)                                             |
 # +-----------------------------------------------------------------+
 
 
@@ -56,15 +56,15 @@ __license__ = 'GNU General Public License v3.0'
 
 # Version
 __version__ = '1.0'
-__build__ = '6'
-__date__ = '2018-02-04'
+__build__ = '7'
+__date__ = '2018-02-17'
 
 
 # +-----------------------------------------------------------------+
 # | CONSTANTS                                                       |
 # +-----------------------------------------------------------------+
 SETUP_FILE = 'setup.bundle'
-SETUP_HASH = 'e9596fb58381cfbe64edd68504b1ae042a1dfd6e'
+SETUP_HASH = '947011c7a1d039967d4a1a3ba0f3eacf346217d7'
 SETUP_COMPRESSION = 'gztar'
 SETUP_EXTRACT_DIR = '/tmp/com.onion.setup'
 
