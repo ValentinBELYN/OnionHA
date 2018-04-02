@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [Releases](https://github.com/ValentinBELYN/OnionHA/releases)
+## [v1.0.4](https://github.com/ValentinBELYN/OnionHA/releases/tag/v1.0.4) (2018-04-02)
+
+### Changed
+- Code optimization.
+
+## [Releases](https://github.com/ValentinBELYN/OnionHA/releases)
 ## [v1.0.3](https://github.com/ValentinBELYN/OnionHA/releases/tag/v1.0.3) (2018-02-17)
 
 ### Added

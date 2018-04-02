@@ -18,7 +18,7 @@
 # | Onion HA Engine                                                 |
 # |                                                                 |
 # | @author:    Valentin BELYN                                      |
-# | @version:   1.0.3 (26)                                          |
+# | @version:   1.0.4 (27)                                          |
 # |                                                                 |
 # | Follow us on GitHub: https://github.com/ValentinBELYN/OnionHA   |
 # +-----------------------------------------------------------------+
@@ -68,9 +68,9 @@ __copyright__ = 'Copyright (C) 2018 Valentin BELYN'
 __license__ = 'GNU General Public License v3.0'
 
 # Version
-__version__ = '1.0.3'
-__build__ = '26'
-__date__ = '2018-02-17'
+__version__ = '1.0.4'
+__build__ = '27'
+__date__ = '2018-04-02'
 
 
 # +-----------------------------------------------------------------+
@@ -108,7 +108,7 @@ CONFIG_TEMPLATE = {
         'enabled': {
             'type': 'str',
             'in': True,
-            'values': ('no', 'syslog', 'yes'),
+            'values': ('yes', 'no'),
             'required': True
             },
         'file': {
@@ -278,7 +278,7 @@ class OnionParser:
             # Creating a dictionary that will contain the extracted configuration
             self.config = dict(self.template)
             for section in self.template:
-                self.config[section] = dict()
+                self.config[section] = {}
                 for option in self.template[section]:
                     self.config[section][option] = 'NOT_FOUND'
 
@@ -379,7 +379,6 @@ def loader(message, delay):
 
     for i in range(0, delay):
         print(f'{bars[i % 4]}   {message}', end='\r', flush=True)
-
         sleep(0.05)
 
 
@@ -392,26 +391,25 @@ def log(level, message):
         >>> log('CRITICAL', 'An error occurred while running the active scenario')
     '''
 
-    if log_enabled != 'no':
-        # Displaying the message in the terminal
-        # Useful for logging with systemd
-        print(f'[{Colors.REFERENCES[level]}{level[0]}{Colors.END}] {message}')
+    # Displaying the message in the terminal
+    # Useful for logging with systemd
+    print(f'[{Colors.REFERENCES[level]}{level[0]}{Colors.END}] {message}')
 
-        if log_enabled == 'yes':
-            # Retrieving the current date
-            date = datetime.today().strftime('%b %d %Y %H:%M:%S')
+    if log_enabled == 'yes':
+        # Retrieving the current date
+        date = datetime.today().strftime('%b %d %Y %H:%M:%S')
 
-            # Getting the host name
-            hostname = gethostname()
+        # Getting the host name
+        hostname = gethostname()
 
-            # Creating the log entry
-            log_entry = f'{date} {hostname} oniond {level}: {message}\n'
+        # Creating the log entry
+        log_entry = f'{date} {hostname} oniond {level}: {message}\n'
 
-            try:
-                with open(log_file, 'a') as file:
-                    file.write(log_entry)
-            except IOError:
-                pass
+        try:
+            with open(log_file, 'a') as file:
+                file.write(log_entry)
+        except IOError:
+            pass
 
 
 def read_configuration():
