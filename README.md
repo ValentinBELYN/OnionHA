@@ -94,11 +94,7 @@ Onion is very easy to configure. Simply edit its configuration file located at `
 
 # Logging
 [logging]
-  enabled:    yes                    # enable or disable logging
-                                     # values are:
-                                     #  - "no" to disable logging,
-                                     #  - "syslog" to log in syslog only,
-                                     #  - "yes" to log in syslog and in a file
+  enabled:    yes                    # enable or disable logging ('yes' or 'no')
   file:       /var/log/onion.log     # logging file (if enabled: yes)
 
 # Cluster nodes
