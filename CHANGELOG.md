@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Code optimization.
 
+### Removed
+- Delete the `syslog` option from the configuration file.
+
 ## [Releases](https://github.com/ValentinBELYN/OnionHA/releases)
 ## [v1.0.3](https://github.com/ValentinBELYN/OnionHA/releases/tag/v1.0.3) (2018-02-17)
 
