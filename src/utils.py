@@ -82,7 +82,7 @@ def read_cluster_dump(dump):
     returns a dictionary containing the status of the nodes.
 
     '''
-    pattern = r'([0-9.]*):([0-2])'
+    pattern = r'([a-zA-Z0-9.-]*):([0-2])'
 
     return {
         address: int(status)

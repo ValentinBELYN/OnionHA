@@ -25,6 +25,7 @@
 '''
 
 from time import time
+from socket import getfqdn
 from .exceptions import UnknownNodeError
 
 
@@ -76,10 +77,15 @@ class Cluster:
         :raises UnknownNodeError: If the node cannot be found.
 
         '''
+        source_address = address
+
+        if address not in self._index:
+            address = getfqdn(address)
+
         if address in self._index:
             return self._index[address]
 
-        raise UnknownNodeError(address)
+        raise UnknownNodeError(source_address)
 
     def get_next_active_node(self):
         '''
