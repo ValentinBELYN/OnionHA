@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Releases](https://github.com/ValentinBELYN/OnionHA/releases)
 
+## [v2.0.1](https://github.com/ValentinBELYN/OnionHA/releases/tag/v2.0.1) - 2020-07-20
+- Improved FQDN support.
+
 ## [v2.0.0](https://github.com/ValentinBELYN/OnionHA/releases/tag/v2.0.0) - 2020-07-16
 - A new start for Onion HA! It has been completely rewritten to be object oriented.
 - Performance has been increased.
