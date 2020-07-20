@@ -50,8 +50,8 @@ Before continuing, make sure your nodes meet the following prerequisites:
 To download and install Onion HA on your nodes, enter the commands below:
 
 ```shell
-wget -qO- https://github.com/ValentinBELYN/OnionHA/archive/v2.0.0.tar.gz | tar -xzf -
-cd OnionHA-2.0.0/setup
+wget -qO- https://github.com/ValentinBELYN/OnionHA/archive/v2.0.1.tar.gz | tar -xzf -
+cd OnionHA-2.0.1/setup
 chmod +x setup.sh
 sudo ./setup.sh install
 ```
