@@ -7,14 +7,14 @@
 # https://github.com/ValentinBELYN/OnionHA
 
 
-readonly ONION_VERSION='2.0.1'
+readonly ONION_VERSION='2.0.2'
 readonly ONION_BIN_FILE='/usr/local/bin/oniond'
 readonly ONION_SERVICE_FILE='/etc/systemd/system/onion-ha.service'
 readonly ONION_LIB_DIR='/usr/local/lib/onion-ha/'
 readonly ONION_CORE_DIR='/usr/local/lib/onion-ha/oniond/'
 readonly ONION_CONF_DIR='/etc/onion-ha/'
 readonly SETUP_FILE='setup.tar.gz'
-readonly SETUP_HASH='ae972f75bae78c200350a4b94e53091bbda5385f'
+readonly SETUP_HASH='9b4f94ef6a58cfa1953b6bea2c64f827d4c2d790'
 readonly SETUP_TEMP_DIR='/tmp/onion-ha-setup/'
 
 
