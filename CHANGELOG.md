@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Releases](https://github.com/ValentinBELYN/OnionHA/releases)
 
+## [v2.0.2](https://github.com/ValentinBELYN/OnionHA/releases/tag/v2.0.2) - 2020-09-02
+- Improved services.
+
 ## [v2.0.1](https://github.com/ValentinBELYN/OnionHA/releases/tag/v2.0.1) - 2020-07-20
 - Improved FQDN support.
 

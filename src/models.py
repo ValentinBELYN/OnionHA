@@ -79,6 +79,9 @@ class Cluster:
         '''
         source_address = address
 
+        if address == '127.0.0.1':
+            return self._current_node
+
         if address not in self._index:
             address = getfqdn(address)
 

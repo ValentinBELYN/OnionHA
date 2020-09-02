@@ -226,21 +226,19 @@ class ListenerService(Service):
     def _repeat(self, cluster, gateway, socket):
         try:
             payload, address, port = socket.receive()
+            node = cluster.get(address)
 
-            if (payload == b'GET STATUS' and
-                address == '127.0.0.1'):
+            if payload == b'HELLO':
+                node.mark_as_alive()
+
+            elif (payload == b'GET STATUS' and
+                  node.is_current_node):
                 dump = dump_cluster(cluster)
 
                 socket.send(
                     payload=dump.encode(),
                     address=address,
                     port=port)
-                return
-
-            node = cluster.get(address)
-
-            if payload == b'HELLO':
-                node.mark_as_alive()
 
         except UnknownNodeError as err:
             Logger.get().warn(
